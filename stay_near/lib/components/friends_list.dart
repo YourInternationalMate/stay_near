@@ -4,10 +4,12 @@ import 'package:stay_near/services/api_service.dart';
 
 class FriendsList extends StatelessWidget {
   final List<FriendLocation> friends;
+  final Function(LatLng) onNavigateToLocation;
 
-  FriendsList({
+  const FriendsList({
     Key? key,
     required this.friends,
+    required this.onNavigateToLocation,
   }) : super(key: key);
 
   @override
@@ -25,7 +27,6 @@ class FriendsList extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Handle Bar
           Container(
             margin: const EdgeInsets.symmetric(vertical: 6),
             width: 50,
@@ -35,7 +36,6 @@ class FriendsList extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          // Friends List
           Expanded(
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -46,50 +46,38 @@ class FriendsList extends StatelessWidget {
                 return Container(
                   margin: const EdgeInsets.symmetric(horizontal: 8),
                   width: 55,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Profile Image
-                      GestureDetector(
-                        child: Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 2,
-                            ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(25),
-                            child: Image.network(
-                              friend.imgURL,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(
-                                  Icons.person,
-                                  color: Colors.white,
-                                  size: 28,
-                                );
-                              },
-                            ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 30.0, top: 10),
+                    child: GestureDetector(
+                      onTap: () {
+                        onNavigateToLocation(LatLng(friend.lat, friend.lng));
+                      },
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.white,
+                            width: 2,
                           ),
                         ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          child: Image.network(
+                            friend.imgURL,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Icon(
+                                Icons.person,
+                                color: Colors.white,
+                                size: 28,
+                              );
+                            },
+                          ),
                         ),
-                      const SizedBox(height: 2),
-                      // Username
-                      Text(
-                        friend.username,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
+                    ),
                   ),
                 );
               },

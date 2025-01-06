@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   Timer? _friendsTimer;
   List<FriendLocation> friendLocations = [];
 
+  final MapController _mapController = MapController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -152,16 +153,24 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _animatedMoveAndZoom(LatLng location) async {
+    // First move to location
+    _mapController.move(location, 13.0);
+    
+    // Then zoom in with animation
+    for (double zoom = 13.0; zoom <= 18.0; zoom += 0.5) {
+      await Future.delayed(const Duration(milliseconds: 50));
+      _mapController.move(location, zoom);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(
-            Icons.menu,
-            color: Colors.white,
-          ),
+          icon: const Icon(Icons.menu, color: Colors.white),
           onPressed: () {
             _scaffoldKey.currentState?.openDrawer();
           },
@@ -184,7 +193,6 @@ class _HomePageState extends State<HomePage> {
             onFriendsUpdate: (List<FriendLocation> newLocations) {
               setState(() {
                 friendLocations = newLocations;
-                // Marker auch hier direkt aktualisieren
                 markers = newLocations.map((friend) => Marker(
                   point: LatLng(friend.lat, friend.lng),
                   child: PinPointer(imgUrl: friend.imgURL),
@@ -201,9 +209,13 @@ class _HomePageState extends State<HomePage> {
               topRight: Radius.circular(12),
             ),
           ),
-          child: FriendsList(friends: friendLocations),
+          child: FriendsList(
+            friends: friendLocations,
+            onNavigateToLocation: (LatLng location) => _animatedMoveAndZoom(location),
+          ),
         ),
         body: FlutterMap(
+          mapController: _mapController,
           options: MapOptions(
             backgroundColor: const Color.fromARGB(0, 255, 255, 255),
             initialCenter: myLocation,

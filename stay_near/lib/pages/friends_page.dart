@@ -714,6 +714,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
   }
 
   Widget _buildSearchTab() {
+    
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () {
@@ -738,6 +739,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
           Padding(
             padding: const EdgeInsets.all(16),
             child: TextFormField(
+              autofocus: true,
               controller: _searchController,
               style: const TextStyle(color: Colors.white),
               onChanged: _handleSearch,
